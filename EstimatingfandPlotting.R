@@ -3,6 +3,8 @@ library(ggplot2)
 library(truncdist)
 library(ReIns)
 library(nimble)
+library(grid)
+library(ggthemes)
 #some ggplot commands for aesthetic plots
 source('./theme_Publication.R')
 #### cauculate and plot T, E, PH, PL for the theoretical distributions ####
