@@ -18,8 +18,6 @@ integrateto=function(uplim,myfunc){
   return(integrate(myfunc,lower = 0.0001,upper=uplim,stop.on.error = F)[[1]])
 }
 
-
-
 ## Main text examples (figure 2)
 #run a loop on combinations of beta parameters
 combs=matrix(ncol=2,c(0.5,0.5,20,20,2,5,1,1),byrow = TRUE)
@@ -123,7 +121,9 @@ fpxgb$y=fpxgb$y+1/(2500)
 #renormalize fp
 fpxgb$y=fpxgb$y/sum(fpxgb$y*(fpxgb$x[2]-fpxgb$x[1]))
 RSVfpxgb=data.frame(cbind(fpxgb$x,fpxgb$y))
-labelpdat=data.frame(cbind(pdataxgbost,as.character(datrsv$xray_diag)))
+datalabels=read.csv("datalabels.csv",header = F)
+datalabels=datalabels[[1]]
+labelpdat=data.frame(cbind(pdataxgbost,as.character(datalabels)))
 names(labelpdat)=c('f','diagnosis')
 labelpdat$f=as.numeric(as.character(labelpdat$f))
 names(RSVfpxgb)=c('x','y')
@@ -141,9 +141,18 @@ ggsave("empiricdist.png")
 fphat=approxfun(fpxgb)
 fptimesphat=approxfun(fpxgb$x,fpxgb$y*fpxgb$x)
 
-#the rest as in the theoretical examples
 E=integrate(fptimesphat,lower = 0.001,upper=0.999)[[1]]
 
+integratefrom=function(lowlim,myfunc){
+  return(integrate(myfunc,lower = lowlim,upper=0.999,subdivisions =100000,stop.on.error = F )[[1]])
+}
+
+integrateto=function(uplim,myfunc){
+  return(integrate(myfunc,lower = 0.001,upper=uplim,
+                   subdivisions =100000,stop.on.error = F)[[1]])
+}
+Thresh=seq(0.001,0.999,0.001)
+#
 pH=sapply(Thresh,integratefrom,fptimesphat)/sapply(Thresh,integratefrom,fphat)
 pL=sapply(Thresh,integrateto,fptimesphat)/sapply(Thresh,integrateto,fphat)
 
